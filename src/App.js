@@ -22,14 +22,28 @@ function Logo() {
   );
 }
 function Form() {
+  //1.create an event handler right in the component function
+  function handleSubmit(e) {
+    //prevent the page from reloading
+    e.preventDefault();
+  }
   return (
-    <form className="add-form">
+    //2.listen to the submit  event that happens on the form
+    <form className="add-form" onSubmit={handleSubmit}>
       <h3> What do you need for your 😎 trip? </h3>
       <select>
-        <option>0</option>
-        <option>1</option>
-        <option>2</option>
+        {/* <option valu={1}>1</option>
+        <option value={2}>2</option>
+        <option value={3}>3</option>*/}
+        {/*create the option dynamically*/}
+        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+          <option value={num} key={num}>
+            {num}
+          </option>
+        ))}
       </select>
+      <input type="text" placeholder="Item ..." />
+      <button>Add</button>
     </form>
   );
 }
@@ -49,7 +63,7 @@ function Item({ item }) {
     //conditionally styling: if the item.packed: true return a textDecoration;,if not return the element
     <li>
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
-        {item.quantity} {item.description}
+        {item.quantity} {item.description} key={item.id}
       </span>
       <button>❌</button>
     </li>
