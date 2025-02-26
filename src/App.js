@@ -1,17 +1,22 @@
 import { useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: false },
-  { id: 3, description: "Charger", quantity: 1, packed: true },
-];
+//const initialItems = [
+//  { id: 1, description: "Passports", quantity: 2, packed: false },
+//  { id: 2, description: "Socks", quantity: 12, packed: false },
+//  { id: 3, description: "Charger", quantity: 1, packed: true },
+//];
 
 function App() {
+  const [items, setItems] = useState([]);
+  //will receive the new item we just created
+  function handleAddItems(item) {
+    setItems((items) => [...items, item]);
+  }
   return (
     <div className="App">
       <Logo />
-      <Form />
-      <PackingList />
+      <Form onAddItems={handleAddItems} />
+      <PackingList items={items} />
       <Stats />
     </div>
   );
@@ -23,11 +28,13 @@ function Logo() {
     </div>
   );
 }
-function Form() {
+function Form({ onAddItems }) {
   //cotrolled element:1. create a piece of state
   const [description, setDescription] = useState("");
   //1.create an event handler right in the component function
   const [quantity, setQuantity] = useState(1);
+  //[] because of a packing list which is an array
+
   function handleSubmit(e) {
     //prevent the page from reloading
     e.preventDefault();
@@ -35,7 +42,9 @@ function Form() {
     if (!description) return;
     // finally let's use these value by creating a newItem
     const newItem = { description, quantity, packed: false, id: Date.now() };
-    console.log(newItem);
+    // console.log(newItem);
+    //call the function handleAddItems to receive the new item
+    onAddItems(newItem);
     //after submittting the form ,return to initial state
     setDescription("");
     setQuantity(1);
@@ -73,11 +82,11 @@ function Form() {
     </form>
   );
 }
-function PackingList({ id }) {
+function PackingList({ items }) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
+        {items.map((item) => (
           <Item item={item} key={item.id} />
         ))}
       </ul>
