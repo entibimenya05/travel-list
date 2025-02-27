@@ -12,11 +12,20 @@ function App() {
   function handleAddItems(item) {
     setItems((items) => [...items, item]);
   }
+  //deleting an item; the click lives in the Item but the state lives in the App,so you create handleDelete in the App
+  //2. pass the function as a props into the packingList
+  function handleDeleteItem(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
   return (
     <div className="App">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList items={items} />
+      <PackingList
+        items={items}
+        //pass the function as props into the packing List
+        onDeleteItem={handleDeleteItem}
+      />
       <Stats />
     </div>
   );
@@ -82,25 +91,33 @@ function Form({ onAddItems }) {
     </form>
   );
 }
-function PackingList({ items }) {
+//3.Pass onDeleteItem as a prop into the packing List
+function PackingList({ items, onDeleteItem }) {
   return (
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item item={item} key={item.id} />
+          <Item
+            item={item}
+            //5. we now need to pass it on in the Item component here
+            onDeleteItem={onDeleteItem}
+            key={item.id}
+          />
         ))}
       </ul>
     </div>
   );
 }
-function Item({ item }) {
+//4.here we also need onDeleteItem as props because the button is in the Item component
+function Item({ item, onDeleteItem }) {
   return (
     //conditionally styling: if the item.packed: true return a textDecoration;,if not return the element
     <li>
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description} key={item.id}
       </span>
-      <button>❌</button>
+      {/*7.very important to use a function () => onDeleteItem(item.id) and pass in the current id*/}
+      <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 }
