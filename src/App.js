@@ -17,6 +17,13 @@ function App() {
   function handleDeleteItem(id) {
     setItems((items) => items.filter((item) => item.id !== id));
   }
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
   return (
     <div className="App">
       <Logo />
@@ -25,6 +32,7 @@ function App() {
         items={items}
         //pass the function as props into the packing List
         onDeleteItem={handleDeleteItem}
+        onToggleItem={handleToggleItem}
       />
       <Stats />
     </div>
@@ -92,7 +100,7 @@ function Form({ onAddItems }) {
   );
 }
 //3.Pass onDeleteItem as a prop into the packing List
-function PackingList({ items, onDeleteItem }) {
+function PackingList({ items, onDeleteItem, onToggleItem }) {
   return (
     <div className="list">
       <ul>
@@ -101,6 +109,7 @@ function PackingList({ items, onDeleteItem }) {
             item={item}
             //5. we now need to pass it on in the Item component here
             onDeleteItem={onDeleteItem}
+            onToggleItem={onToggleItem}
             key={item.id}
           />
         ))}
@@ -109,10 +118,15 @@ function PackingList({ items, onDeleteItem }) {
   );
 }
 //4.here we also need onDeleteItem as props because the button is in the Item component
-function Item({ item, onDeleteItem }) {
+function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     //conditionally styling: if the item.packed: true return a textDecoration;,if not return the element
     <li>
+      <input
+        type="checkbox"
+        value={item.packed}
+        onChange={() => onToggleItem(item.id)}
+      />
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description} key={item.id}
       </span>
