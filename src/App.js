@@ -8,6 +8,7 @@ import { useState } from "react";
 
 function App() {
   const [items, setItems] = useState([]);
+
   //will receive the new item we just created
   function handleAddItems(item) {
     setItems((items) => [...items, item]);
@@ -34,7 +35,8 @@ function App() {
         onDeleteItem={handleDeleteItem}
         onToggleItem={handleToggleItem}
       />
-      <Stats />
+      {/*2.pass items as a props to solve the items in the Stats component*/}
+      <Stats items={items} />
     </div>
   );
 }
@@ -101,10 +103,24 @@ function Form({ onAddItems }) {
 }
 //3.Pass onDeleteItem as a prop into the packing List
 function PackingList({ items, onDeleteItem, onToggleItem }) {
+  //3 step for our piece of state
+  const [sortBy, setSortBy] = useState("input");
+  //create a new derived variable
+  let sortedItems;
+  if (sortBy === "input") sortedItems = items;
+  if (sortBy === "description")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+  if (sortBy === "packed")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
   return (
     <div className="list">
       <ul>
-        {items.map((item) => (
+        {/*from now on instaed using items in the array, we will now use sortedItems*/}
+        {sortedItems.map((item) => (
           <Item
             item={item}
             //5. we now need to pass it on in the Item component here
@@ -114,6 +130,17 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
           />
         ))}
       </ul>
+      {/*sorting:more on derived state;
+      3. use onChange handler to update*/}
+      <div className="actions">
+        {/*2.use that state sortBy as a value*/}
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Sort by inputy order</option>
+          <option value="description">Sort by description</option>
+          <option value="packed">Sort by packed status</option>
+        </select>
+        <button>Clear</button>
+      </div>
     </div>
   );
 }
@@ -135,10 +162,28 @@ function Item({ item, onDeleteItem, onToggleItem }) {
     </li>
   );
 }
-function Stats() {
+//3. accept items props here
+function Stats({ items }) {
+  if (!items.length)
+    return (
+      <p className="stats">
+        <em>Start adding some items to your packing list 🚀</em>
+      </p>
+    );
+  //1.derived state
+  const numItems = items.length;
+  const numPacked = items.filter((item) => item.packed).length;
+  const percentage = Math.round((numPacked / numItems) * 100);
   return (
     <footer className="stats">
-      <em>🧳 You have x on your list,and you already packed x(x %)</em>
+      {/*4. Here we can use it now below*/}
+      <em>
+        {percentage === 100
+          ? "You got everything ! Ready to go ✈️"
+          : ` 🧳 You have ${numItems} on your list,and you already packed ${numPacked}(
+        {percentage}
+        %)`}
+      </em>
     </footer>
   );
 }
