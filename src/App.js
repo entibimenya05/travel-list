@@ -25,6 +25,13 @@ function App() {
       )
     );
   }
+  function handleClearList() {
+    //to porevent the user from accidently clearing everything
+    const confirmed = window.confirm(
+      "Are you sure you want to delete all items?"
+    );
+    if (confirmed) setItems([]);
+  }
   return (
     <div className="App">
       <Logo />
@@ -34,6 +41,7 @@ function App() {
         //pass the function as props into the packing List
         onDeleteItem={handleDeleteItem}
         onToggleItem={handleToggleItem}
+        onClearList={handleClearList}
       />
       {/*2.pass items as a props to solve the items in the Stats component*/}
       <Stats items={items} />
@@ -102,7 +110,7 @@ function Form({ onAddItems }) {
   );
 }
 //3.Pass onDeleteItem as a prop into the packing List
-function PackingList({ items, onDeleteItem, onToggleItem }) {
+function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
   //3 step for our piece of state
   const [sortBy, setSortBy] = useState("input");
   //create a new derived variable
@@ -126,6 +134,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
             //5. we now need to pass it on in the Item component here
             onDeleteItem={onDeleteItem}
             onToggleItem={onToggleItem}
+            onClearList={onClearList}
             key={item.id}
           />
         ))}
@@ -139,7 +148,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
           <option value="description">Sort by description</option>
           <option value="packed">Sort by packed status</option>
         </select>
-        <button>Clear</button>
+        <button onClick={onClearList}>Clear list</button>
       </div>
     </div>
   );
